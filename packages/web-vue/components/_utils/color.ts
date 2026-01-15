@@ -85,10 +85,10 @@ export const convertHexToDecimal = (h: string): number => {
 };
 
 export const DEFAULT_COLOR = {
-  h: 0,
-  s: 1,
-  v: 1,
-  a: 1,
+  h: 1,
+  s: 0,
+  v: 0,
+  a: 0,
 };
 
 export const formatInputToRgb = (

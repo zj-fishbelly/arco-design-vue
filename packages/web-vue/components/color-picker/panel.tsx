@@ -31,7 +31,7 @@ export default defineComponent({
     historyColors: Array as PropType<string[]>,
     presetColors: Array as PropType<string[]>,
     onAlphaChange: Function as PropType<(alpha: number) => void>,
-    onHsvChange: Function as PropType<(hsv: HSV) => void>,
+    onHsvChange: Function as PropType<(hsv: HSV, clear?: boolean) => void>,
   },
   setup(props) {
     const { t } = useI18n();
@@ -47,9 +47,9 @@ export default defineComponent({
     const showCopy = ref(false);
 
     const onHexInputChange = (value: string) => {
-      const _rgb = hexToRgb(value) || { r: 255, g: 0, b: 0 };
+      const _rgb = hexToRgb(value) || { r: 0, g: 0, b: 0 };
       const _hsv = rgbToHsv(_rgb.r, _rgb.g, _rgb.b);
-      props.onHsvChange?.(_hsv);
+      props.onHsvChange?.(_hsv, !value);
     };
 
     const renderInput = () => {
@@ -173,7 +173,6 @@ export default defineComponent({
                   label: 'RGB',
                 },
               ]}
-              disabled={colorPickerCtx?.isEmptyColor}
               modelValue={format.value}
               onChange={onChange}
             />

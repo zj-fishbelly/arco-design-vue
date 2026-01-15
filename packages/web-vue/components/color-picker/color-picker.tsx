@@ -144,8 +144,8 @@ export default defineComponent({
   },
   setup(props, { emit, slots }) {
     const EMPTY_COLOR = null;
-    const prefixCls = getPrefixCls('color-picker');
     const clearColor = ref(false);
+    const prefixCls = getPrefixCls('color-picker');
     const mergeValue = computed(() => {
       return props.modelValue ?? props.defaultValue;
     });
@@ -175,23 +175,20 @@ export default defineComponent({
       }
     );
 
-    const defaultRgba = () => {
+    const defaultColorString = () => {
       const { h, s, v, a } = DEFAULT_COLOR;
       const { r, g, b } = hsvToRgb(h, s, v);
-      return {
-        r,
-        g,
-        b,
-        a,
-      };
+      return `rgba(${r}, ${g}, ${b}, ${a.toFixed(2)})`;
     };
 
     const isEmpty = computed(() => {
-      const { r, g, b, a } = defaultRgba();
-      const defaultColorString = `rgba(${r}, ${g}, ${b}, ${a.toFixed(2)})`;
+      const defaultColorStr = defaultColorString();
+      let value = props.modelValue;
+      if (props.modelValue !== undefined) {
+        value = mergeValue.value;
+      }
       return (
-        (!mergeValue.value || clearColor.value === true) &&
-        defaultColorString === colorString.value
+        defaultColorStr === colorString.value && (clearColor.value || !value)
       );
     });
 
@@ -233,8 +230,12 @@ export default defineComponent({
       clearColor.value = false;
     });
 
-    const onHsvChange = (_value: HSV) => {
+    const onHsvChange = (_value: HSV, clear?: boolean) => {
       !props.disabled && setHsv(_value);
+      clearColor.value = clear ?? false;
+      if (clearColor.value) {
+        setAlpha(0);
+      }
     };
 
     const onAlphaChange = (_value: number) => {
@@ -250,8 +251,6 @@ export default defineComponent({
       reactive({
         isEmptyColor,
         formatValue,
-        clearColor,
-        defaultRgba,
       })
     );
 
